@@ -34,13 +34,10 @@ class _AutofillOtpState extends State<AutofillOtp> {
     super.initState();
     controllers = List.generate(
       widget.numberOfTextFeilds,
-          (_) => TextEditingController(),
+      (_) => TextEditingController(),
     );
 
-    focusNodes = List.generate(
-      widget.numberOfTextFeilds,
-          (_) => FocusNode(),
-    );
+    focusNodes = List.generate(widget.numberOfTextFeilds, (_) => FocusNode());
 
     if (widget.autoFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,9 +95,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               maxLength: 1,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
 
               decoration: InputDecoration(
                 counterText: "",
@@ -119,8 +114,24 @@ class _AutofillOtpState extends State<AutofillOtp> {
 
               onChanged: (value) {
                 //auto fill values
-                for(int i=0;i<value.length && i<widget.numberOfTextFeilds;i++){
-                  controllers[i].text=value[i];
+                if (value.length > 1) {
+                  for (var controller in controllers) {
+                    controller.clear();
+                  }
+
+                  for (int i = 0; i < value.length && i < widget.numberOfTextFeilds; i++) {
+                    controllers[i].text = value[i];
+                  }
+                  if (value.length >= widget.numberOfTextFeilds) {
+                    FocusScope.of(context).unfocus();
+                  } else {
+                    FocusScope.of(
+                      context,
+                    ).requestFocus(focusNodes[value.length]);
+                  }
+
+                  _notify();
+                  return;
                 }
 
                 // forward move
