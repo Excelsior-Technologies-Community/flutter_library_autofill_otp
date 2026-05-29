@@ -173,12 +173,11 @@ Called when all OTP fields are filled.
 
 ## 📸 Manual OTP Fill
 
-![Manual OTP](assets/manual_otp.gif)
+<img src="assets/manual_otp.gif" width="250" height="300"/>
 
 ## ⚡ Autofill OTP
 
-![Autofill OTP](assets/autofill_otp.gif)
-
+<img src="assets/autofill_otp.gif" width="250" height="300"/>
 
 # 🤝 Contributing
 
