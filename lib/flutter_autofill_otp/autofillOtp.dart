@@ -9,6 +9,7 @@ class AutofillOtp extends StatefulWidget {
   final bool autoFocus;
   final Color? focusBorderColor;
   final double? focusBorderwidth;
+  final bool obscureText;
 
   const AutofillOtp({
     super.key,
@@ -19,6 +20,7 @@ class AutofillOtp extends StatefulWidget {
     this.autoFocus = true,
     this.focusBorderColor,
     this.focusBorderwidth,
+    this.obscureText=false,
   });
 
   @override
@@ -66,8 +68,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
   void _notify() {
     final otp = getOtp();
     widget.onChanged?.call(otp);
-
-    if (!otp.contains("") && otp.length == widget.numberOfTextFeilds) {
+    if (controllers.every((c) => c.text.isNotEmpty)) {
       widget.onCompleted?.call(otp);
     }
   }
@@ -90,6 +91,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
               return KeyEventResult.ignored;
             },
             child: TextField(
+              obscureText: widget.obscureText,
               controller: controllers[index],
               focusNode: focusNodes[index],
               keyboardType: TextInputType.number,
@@ -113,60 +115,43 @@ class _AutofillOtpState extends State<AutofillOtp> {
                 ),
               ),
 
-                onChanged: (value) {
+              onChanged: (value) {
                   if (value.length > 1) {
                     final pastedOtp = value.replaceAll(RegExp(r'[^0-9]'), '');
 
-                    // clear all fields
-                    for (var controller in controllers) {
-                      controller.clear();
+                    for (int i = 0; i < widget.numberOfTextFeilds; i++) {
+                      if (i < pastedOtp.length) {
+                        controllers[i].text = pastedOtp[i];
+                      } else {
+                        controllers[i].clear();
+                      }
                     }
-                    // fill values
-                    for (int i = 0; i < pastedOtp.length && i < widget.numberOfTextFeilds;i++) {
-                      controllers[i].text = pastedOtp[i];
-                    }
+
                     // move focus
                     if (pastedOtp.length >= widget.numberOfTextFeilds) {
                       FocusScope.of(context).unfocus();
                     } else {
-                      FocusScope.of(context).requestFocus(
-                        focusNodes[pastedOtp.length],
-                      );
+                      FocusScope.of(context).requestFocus(focusNodes[pastedOtp.length],);
                     }
                     _notify();
+                    setState(() {});
                     return;
                   }
                   if (value.length > 1) {
                     controllers[index].text = value[0];
-
                     controllers[index].selection =
-                    const TextSelection.collapsed(offset: 1);
+                    const TextSelection.collapsed(offset: 1,);
                   }
                   if (value.isNotEmpty) {
-
-                    // keep only first character
-                    if (value.length > 1) {
-                      controllers[index].text = value[0];
-
-                      controllers[index].selection =
-                      const TextSelection.collapsed(
-                        offset: 1,
-                      );
-                    }
-
                     if (index < widget.numberOfTextFeilds - 1) {
-                      FocusScope.of(context).requestFocus(
-                        focusNodes[index + 1],
-                      );
+                      FocusScope.of(context).requestFocus(focusNodes[index + 1],);
                     } else {
                       FocusScope.of(context).unfocus();
                     }
                   }
                   else {
                     if (index > 0) {
-                      FocusScope.of(context).requestFocus(
-                        focusNodes[index - 1],
-                      );
+                      FocusScope.of(context).requestFocus(focusNodes[index - 1],);
                     }
                   }
                   _notify();
