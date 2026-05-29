@@ -16,6 +16,31 @@ class _AutofillotpState extends State<Autofillotp> {
   late List<FocusNode> focusNodes;
 
   @override
+  void initState() {
+    super.initState();
+
+    controllers = List.generate(
+      widget.numberOfTxtFeilds,
+          (_) => TextEditingController(),
+    );
+
+    focusNodes = List.generate(
+      widget.numberOfTxtFeilds,
+          (_) => FocusNode(),
+    );
+  }
+  @override
+  void dispose() {
+    for (var c in controllers) {
+      c.dispose();
+    }
+    for (var f in focusNodes) {
+      f.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,10 +72,15 @@ class _AutofillotpState extends State<Autofillotp> {
               ),
             ),
             onChanged: (value) {
-              if (value.isNotEmpty && index < widget.numberOfTxtFeilds) {
-                FocusScope.of(context).nextFocus();
+            if (value.isEmpty && index > 0) {
+              FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+            }
+            else if (value.isNotEmpty) {
+              if (index < widget.numberOfTxtFeilds - 1) {
+                FocusScope.of(context).requestFocus(focusNodes[index + 1]);
               }
-            },
+            }
+          },
           ),
         );
       }),
