@@ -94,9 +94,10 @@ class _AutofillOtpState extends State<AutofillOtp> {
               focusNode: focusNodes[index],
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              maxLength: 1,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-
+             // maxLength: 1,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
               decoration: InputDecoration(
                 counterText: "",
                 focusedBorder: OutlineInputBorder(
@@ -112,43 +113,73 @@ class _AutofillOtpState extends State<AutofillOtp> {
                 ),
               ),
 
-              onChanged: (value) {
-                //auto fill values
-                if (value.length > 1) {
-                  for (var controller in controllers) {
-                    controller.clear();
-                  }
+                onChanged: (value) {
+                  if (value.length > 1) {
+                    final pastedOtp = value.replaceAll(RegExp(r'[^0-9]'), '');
 
-                  for (int i = 0; i < value.length && i < widget.numberOfTextFeilds; i++) {
-                    controllers[i].text = value[i];
+                    // clear all fields
+                    for (var controller in controllers) {
+                      controller.clear();
+                    }
+                    // fill values
+                    for (int i = 0; i < pastedOtp.length && i < widget.numberOfTextFeilds;i++) {
+                      controllers[i].text = pastedOtp[i];
+                    }
+                    // move focus
+                    if (pastedOtp.length >= widget.numberOfTextFeilds) {
+                      FocusScope.of(context).unfocus();
+                    } else {
+                      FocusScope.of(context).requestFocus(
+                        focusNodes[pastedOtp.length],
+                      );
+                    }
+                    _notify();
+                    return;
                   }
-                  if (value.length >= widget.numberOfTextFeilds) {
-                    FocusScope.of(context).unfocus();
-                  } else {
-                    FocusScope.of(
-                      context,
-                    ).requestFocus(focusNodes[value.length]);
-                  }
+                  if (value.length > 1) {
+                    controllers[index].text = value[0];
 
+                    controllers[index].selection =
+                    const TextSelection.collapsed(offset: 1);
+                  }
+                  if (value.isNotEmpty) {
+
+                    // keep only first character
+                    if (value.length > 1) {
+                      controllers[index].text = value[0];
+
+                      controllers[index].selection =
+                      const TextSelection.collapsed(
+                        offset: 1,
+                      );
+                    }
+
+                    if (index < widget.numberOfTextFeilds - 1) {
+                      FocusScope.of(context).requestFocus(
+                        focusNodes[index + 1],
+                      );
+                    } else {
+                      FocusScope.of(context).unfocus();
+                    }
+                  }
+                  else {
+                    if (index > 0) {
+                      FocusScope.of(context).requestFocus(
+                        focusNodes[index - 1],
+                      );
+                    }
+                  }
                   _notify();
-                  return;
-                }
-
-                // forward move
-                if (value.isNotEmpty) {
-                  if (index < widget.numberOfTextFeilds - 1) {
-                    FocusScope.of(context).requestFocus(focusNodes[index + 1]);
-                  } else {
-                    FocusScope.of(context).unfocus();
+                },
+              onTap: () {
+                for (int i = 0; i < index; i++) {
+                  if (controllers[i].text.isEmpty) {
+                    FocusScope.of(context).requestFocus(
+                      focusNodes[i],
+                    );
+                    return;
                   }
                 }
-                // backward move (only focus)
-                else {
-                  if (index > 0) {
-                    FocusScope.of(context).requestFocus(focusNodes[index - 1]);
-                  }
-                }
-                _notify();
               },
             ),
           ),
