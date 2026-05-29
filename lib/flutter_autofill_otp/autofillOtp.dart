@@ -8,6 +8,7 @@ class AutofillOtp extends StatefulWidget {
   final Function(String otp)? onChanged;
   final bool autoFocus;
   final Color? focusBorderColor;
+  final double? focusBorderwidth;
 
   const AutofillOtp({
     super.key,
@@ -16,7 +17,8 @@ class AutofillOtp extends StatefulWidget {
     this.onChanged,
     this.onCompleted,
     this.autoFocus = true,
-    this.focusBorderColor
+    this.focusBorderColor,
+    this.focusBorderwidth,
   });
 
   @override
@@ -107,6 +109,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: widget.focusBorderColor ?? Colors.grey,
+                    width: widget.focusBorderwidth ?? 2,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
