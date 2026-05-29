@@ -21,8 +21,8 @@ class AutofillOtp extends StatefulWidget {
     this.autoFocus = true,
     this.focusBorderColor,
     this.focusBorderwidth,
-    this.obscureText=false,
-    this.showCursor=true,
+    this.obscureText = false,
+    this.showCursor = true,
   });
 
   @override
@@ -77,46 +77,48 @@ class _AutofillOtpState extends State<AutofillOtp> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(widget.numberOfTextFields, (index) {
-        return SizedBox(
-          width: 50,
-          child: Focus(
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.backspace) {
-                if (controllers[index].text.isEmpty && index > 0) {
-                  FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+    return AutofillGroup(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(widget.numberOfTextFields, (index) {
+          return SizedBox(
+            width: 50,
+            child: Focus(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent &&
+                    event.logicalKey == LogicalKeyboardKey.backspace) {
+                  if (controllers[index].text.isEmpty && index > 0) {
+                    FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+                  }
                 }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: TextField(
-              showCursor: widget.showCursor,
-              obscureText: widget.obscureText,
-              controller: controllers[index],
-              focusNode: focusNodes[index],
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-             // maxLength: 1,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-              ],
-              decoration: InputDecoration(
-                counterText: "",
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.focusBorderColor ?? Colors.grey,
-                    width: widget.focusBorderwidth ?? 2,
+                return KeyEventResult.ignored;
+              },
+              child: TextField(
+                showCursor: widget.showCursor,
+                obscureText: widget.obscureText,
+                controller: controllers[index],
+                focusNode: focusNodes[index],
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                // maxLength: 1,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ],
+                decoration: InputDecoration(
+                  counterText: "",
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.focusBorderColor ?? Colors.grey,
+                      width: widget.focusBorderwidth ?? 2,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.enabledBorderColor ?? Colors.grey,
+                    ),
                   ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? Colors.grey,
-                  ),
-                ),
-              ),
 
                 onChanged: (value) {
                   if (value.length > 1) {
@@ -134,41 +136,43 @@ class _AutofillOtpState extends State<AutofillOtp> {
                     if (pastedOtp.length >= widget.numberOfTextFields) {
                       FocusScope.of(context).unfocus();
                     } else {
-                      FocusScope.of(context).requestFocus(
-                        focusNodes[pastedOtp.length],
-                      );
+                      FocusScope.of(
+                        context,
+                      ).requestFocus(focusNodes[pastedOtp.length]);
                     }
                     _notify();
                     return;
                   }
                   if (value.isNotEmpty) {
                     if (index < widget.numberOfTextFields - 1) {
-                      FocusScope.of(context).requestFocus(focusNodes[index + 1],);
+                      FocusScope.of(
+                        context,
+                      ).requestFocus(focusNodes[index + 1]);
                     } else {
                       FocusScope.of(context).unfocus();
                     }
-                  }
-                  else {
+                  } else {
                     if (index > 0) {
-                      FocusScope.of(context).requestFocus(focusNodes[index - 1],);
+                      FocusScope.of(
+                        context,
+                      ).requestFocus(focusNodes[index - 1]);
                     }
                   }
                   _notify();
                 },
-              onTap: () {
-                for (int i = 0; i < index; i++) {
-                  if (controllers[i].text.isEmpty) {
-                    FocusScope.of(context).requestFocus(
-                      focusNodes[i],
-                    );
-                    return;
+                onTap: () {
+                  for (int i = 0; i < index; i++) {
+                    if (controllers[i].text.isEmpty) {
+                      FocusScope.of(context).requestFocus(focusNodes[i]);
+                      return;
+                    }
                   }
-                }
-              },
+                },
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }
