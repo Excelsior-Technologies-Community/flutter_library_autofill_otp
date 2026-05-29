@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AutofillOtp extends StatefulWidget {
-  final int numberOfTxtFeilds;
+  final int numberOfTextFeilds;
   final Color? enabledBorderColor;
   final Function(String otp)? onCompleted;
   final Function(String otp)? onChanged;
@@ -12,7 +12,7 @@ class AutofillOtp extends StatefulWidget {
 
   const AutofillOtp({
     super.key,
-    required this.numberOfTxtFeilds,
+    required this.numberOfTextFeilds,
     this.enabledBorderColor,
     this.onChanged,
     this.onCompleted,
@@ -33,12 +33,12 @@ class _AutofillOtpState extends State<AutofillOtp> {
   void initState() {
     super.initState();
     controllers = List.generate(
-      widget.numberOfTxtFeilds,
+      widget.numberOfTextFeilds,
           (_) => TextEditingController(),
     );
 
     focusNodes = List.generate(
-      widget.numberOfTxtFeilds,
+      widget.numberOfTextFeilds,
           (_) => FocusNode(),
     );
 
@@ -70,7 +70,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
     final otp = getOtp();
     widget.onChanged?.call(otp);
 
-    if (!otp.contains("") && otp.length == widget.numberOfTxtFeilds) {
+    if (!otp.contains("") && otp.length == widget.numberOfTextFeilds) {
       widget.onCompleted?.call(otp);
     }
   }
@@ -79,7 +79,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(widget.numberOfTxtFeilds, (index) {
+      children: List.generate(widget.numberOfTextFeilds, (index) {
         return SizedBox(
           width: 50,
           child: Focus(
@@ -87,8 +87,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.backspace) {
                 if (controllers[index].text.isEmpty && index > 0) {
-                  FocusScope.of(context)
-                      .requestFocus(focusNodes[index - 1]);
+                  FocusScope.of(context).requestFocus(focusNodes[index - 1]);
                 }
               }
               return KeyEventResult.ignored;
@@ -101,7 +100,6 @@ class _AutofillOtpState extends State<AutofillOtp> {
               maxLength: 1,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(1),
               ],
 
               decoration: InputDecoration(
@@ -120,21 +118,23 @@ class _AutofillOtpState extends State<AutofillOtp> {
               ),
 
               onChanged: (value) {
+                //auto fill values
+                for(int i=0;i<value.length && i<widget.numberOfTextFeilds;i++){
+                  controllers[i].text=value[i];
+                }
+
                 // forward move
                 if (value.isNotEmpty) {
-                  if (index < widget.numberOfTxtFeilds - 1) {
-                    FocusScope.of(context)
-                        .requestFocus(focusNodes[index + 1]);
+                  if (index < widget.numberOfTextFeilds - 1) {
+                    FocusScope.of(context).requestFocus(focusNodes[index + 1]);
                   } else {
                     FocusScope.of(context).unfocus();
                   }
                 }
-
                 // backward move (only focus)
                 else {
                   if (index > 0) {
-                    FocusScope.of(context)
-                        .requestFocus(focusNodes[index - 1]);
+                    FocusScope.of(context).requestFocus(focusNodes[index - 1]);
                   }
                 }
                 _notify();
