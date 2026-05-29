@@ -28,7 +28,6 @@ class _AutofillOtpState extends State<AutofillOtp> {
   @override
   void initState() {
     super.initState();
-
     controllers = List.generate(
       widget.numberOfTxtFeilds,
           (_) => TextEditingController(),
@@ -103,7 +102,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
 
               decoration: InputDecoration(
                 counterText: "",
-                border: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: widget.borderColor ?? Colors.grey,
                   ),
@@ -128,7 +127,6 @@ class _AutofillOtpState extends State<AutofillOtp> {
                         .requestFocus(focusNodes[index - 1]);
                   }
                 }
-
                 _notify();
               },
             ),
