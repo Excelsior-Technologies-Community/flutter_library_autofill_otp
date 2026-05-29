@@ -3,18 +3,20 @@ import 'package:flutter/services.dart';
 
 class AutofillOtp extends StatefulWidget {
   final int numberOfTxtFeilds;
-  final Color? borderColor;
+  final Color? enabledBorderColor;
   final Function(String otp)? onCompleted;
   final Function(String otp)? onChanged;
   final bool autoFocus;
+  final Color? focusBorderColor;
 
   const AutofillOtp({
     super.key,
     required this.numberOfTxtFeilds,
-    this.borderColor,
+    this.enabledBorderColor,
     this.onChanged,
     this.onCompleted,
     this.autoFocus = true,
+    this.focusBorderColor
   });
 
   @override
@@ -102,9 +104,14 @@ class _AutofillOtpState extends State<AutofillOtp> {
 
               decoration: InputDecoration(
                 counterText: "",
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: widget.focusBorderColor ?? Colors.grey,
+                  ),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: widget.borderColor ?? Colors.grey,
+                    color: widget.enabledBorderColor ?? Colors.grey,
                   ),
                 ),
               ),
