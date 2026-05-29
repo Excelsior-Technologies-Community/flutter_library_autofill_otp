@@ -179,12 +179,6 @@ Called when all OTP fields are filled.
 
 <img src="assets/autofill_otp.gif" width="250" height="500"/>
 
-# 🤝 Contributing
-
-Pull requests are welcome.
-
-If you find bugs or want new features, feel free to open an issue.
-
 ---
 
 # 📄 License
