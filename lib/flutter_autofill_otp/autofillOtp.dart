@@ -18,6 +18,9 @@ class Autofillotp extends StatelessWidget {
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             maxLength: 1,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly
+            ],
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
