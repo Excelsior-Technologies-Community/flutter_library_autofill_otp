@@ -13,6 +13,8 @@ class Autofillotp extends StatefulWidget {
 
 class _AutofillotpState extends State<Autofillotp> {
   late List<TextEditingController> controllers;
+  late List<FocusNode> focusNodes;
+
   @override
   Widget build(BuildContext context) {
     return Row(
