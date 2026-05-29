@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AutofillOtp extends StatefulWidget {
-  final int numberOfTextFeilds;
+  final int numberOfTextFields;
   final Color? enabledBorderColor;
   final Function(String otp)? onCompleted;
   final Function(String otp)? onChanged;
@@ -10,10 +10,11 @@ class AutofillOtp extends StatefulWidget {
   final Color? focusBorderColor;
   final double? focusBorderwidth;
   final bool obscureText;
+  final bool showCursor;
 
   const AutofillOtp({
     super.key,
-    required this.numberOfTextFeilds,
+    required this.numberOfTextFields,
     this.enabledBorderColor,
     this.onChanged,
     this.onCompleted,
@@ -21,6 +22,7 @@ class AutofillOtp extends StatefulWidget {
     this.focusBorderColor,
     this.focusBorderwidth,
     this.obscureText=false,
+    this.showCursor=true,
   });
 
   @override
@@ -35,11 +37,11 @@ class _AutofillOtpState extends State<AutofillOtp> {
   void initState() {
     super.initState();
     controllers = List.generate(
-      widget.numberOfTextFeilds,
+      widget.numberOfTextFields,
       (_) => TextEditingController(),
     );
 
-    focusNodes = List.generate(widget.numberOfTextFeilds, (_) => FocusNode());
+    focusNodes = List.generate(widget.numberOfTextFields, (_) => FocusNode());
 
     if (widget.autoFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,7 +79,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(widget.numberOfTextFeilds, (index) {
+      children: List.generate(widget.numberOfTextFields, (index) {
         return SizedBox(
           width: 50,
           child: Focus(
@@ -91,6 +93,7 @@ class _AutofillOtpState extends State<AutofillOtp> {
               return KeyEventResult.ignored;
             },
             child: TextField(
+              showCursor: widget.showCursor,
               obscureText: widget.obscureText,
               controller: controllers[index],
               focusNode: focusNodes[index],
@@ -115,11 +118,11 @@ class _AutofillOtpState extends State<AutofillOtp> {
                 ),
               ),
 
-              onChanged: (value) {
+                onChanged: (value) {
                   if (value.length > 1) {
                     final pastedOtp = value.replaceAll(RegExp(r'[^0-9]'), '');
 
-                    for (int i = 0; i < widget.numberOfTextFeilds; i++) {
+                    for (int i = 0; i < widget.numberOfTextFields; i++) {
                       if (i < pastedOtp.length) {
                         controllers[i].text = pastedOtp[i];
                       } else {
@@ -128,22 +131,18 @@ class _AutofillOtpState extends State<AutofillOtp> {
                     }
 
                     // move focus
-                    if (pastedOtp.length >= widget.numberOfTextFeilds) {
+                    if (pastedOtp.length >= widget.numberOfTextFields) {
                       FocusScope.of(context).unfocus();
                     } else {
-                      FocusScope.of(context).requestFocus(focusNodes[pastedOtp.length],);
+                      FocusScope.of(context).requestFocus(
+                        focusNodes[pastedOtp.length],
+                      );
                     }
                     _notify();
-                    setState(() {});
                     return;
                   }
-                  if (value.length > 1) {
-                    controllers[index].text = value[0];
-                    controllers[index].selection =
-                    const TextSelection.collapsed(offset: 1,);
-                  }
                   if (value.isNotEmpty) {
-                    if (index < widget.numberOfTextFeilds - 1) {
+                    if (index < widget.numberOfTextFields - 1) {
                       FocusScope.of(context).requestFocus(focusNodes[index + 1],);
                     } else {
                       FocusScope.of(context).unfocus();
