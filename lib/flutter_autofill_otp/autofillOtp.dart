@@ -48,39 +48,48 @@ class _AutofillotpState extends State<Autofillotp> {
         return SizedBox(
           width: 50,
           child: TextField(
+            controller: controllers[index],
+            focusNode: focusNodes[index],
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             maxLength: 1,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly
             ],
+
             onTap: () {
-            // prevent skipping empty fields
-            for (int i = 0; i < index; i++) {
-          if (controllers[i].text.isEmpty) {
-            FocusScope.of(context).requestFocus(focusNodes[i]);
-            return;
-          }
-        }
-      },
+              for (int i = 0; i < index; i++) {
+                if (controllers[i].text.isEmpty) {
+                  FocusScope.of(context).requestFocus(focusNodes[i]);
+                  return;
+                }
+              }
+            },
+
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: widget.borderColor ?? Colors.grey
-                )
+                  color: widget.borderColor ?? Colors.grey,
+                ),
               ),
             ),
+
             onChanged: (value) {
-            if (value.isEmpty && index > 0) {
-              FocusScope.of(context).requestFocus(focusNodes[index - 1]);
-            }
-            else if (value.isNotEmpty) {
-              if (index < widget.numberOfTxtFeilds - 1) {
-                FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+              // move back
+              if (value.isEmpty && index > 0) {
+                FocusScope.of(context).requestFocus(focusNodes[index - 1]);
               }
-            }
-          },
+
+              // move forward
+              else if (value.isNotEmpty) {
+                if (index < widget.numberOfTxtFeilds - 1) {
+                  FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                } else {
+                  FocusScope.of(context).unfocus();
+                }
+              }
+            },
           ),
         );
       }),
