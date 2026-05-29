@@ -56,7 +56,6 @@ class _AutofillotpState extends State<Autofillotp> {
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly
             ],
-
             onTap: () {
               for (int i = 0; i < index; i++) {
                 if (controllers[i].text.isEmpty) {
